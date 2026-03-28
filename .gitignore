@@ -1,0 +1,23 @@
+/build*/
+/arcade
+/lib/*.so
+/data/
+*.dSYM/
+.DS_Store
+/screenshots/*.ppm
+
+/build-deps/
+
+# Generated diagnostics and release output
+*.log
+*.jsonl
+*.sample.txt
+*.sample.txt.gz
+/doc/**/*.xml
+/doc/performance/raw/*.txt
+/dist/
+
+# Keep machine diagnostics and validation captures local.
+/doc/**/*.json
+/doc/validation/
+/doc/performance/

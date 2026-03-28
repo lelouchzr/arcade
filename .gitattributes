@@ -1,0 +1,3 @@
+# Preserve the supplied historical code byte-for-byte for the ABI regression fixture.
+bonus/legacy/sdk/** -whitespace
+tests/legacy/original/** -whitespace
