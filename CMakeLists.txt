@@ -37,3 +37,45 @@ add_library(arcade_support STATIC
     src/storage/FileLock.cpp src/storage/ScoreFile.cpp src/storage/Scores.cpp
     src/presentation/CellStyle.cpp src/presentation/BoardViewport.cpp)
 target_link_libraries(arcade_support PUBLIC arcade_sdk ${CMAKE_DL_LIBS} Threads::Threads)
+add_library(arcade_core STATIC src/core/Core.cpp src/core/CoreInput.cpp src/core/CorePresentation.cpp
+    src/core/BoardRenderer.cpp)
+target_include_directories(arcade_core PUBLIC src/core)
+target_link_libraries(arcade_core PUBLIC arcade_support)
+add_executable(arcade src/main.cpp)
+target_link_libraries(arcade PRIVATE arcade_core)
+
+function(arcade_plugin target)
+    add_library(${target} MODULE ${ARGN})
+    target_link_libraries(${target} PRIVATE arcade_support)
+    set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN YES PREFIX "" SUFFIX ".so"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+endfunction()
+
+set(snake_sources src/games/snake/Snake.cpp)
+set(mine_sources src/games/minesweeper/Minesweeper.cpp)
+arcade_plugin(arcade_snake ${snake_sources})
+arcade_plugin(arcade_minesweeper ${mine_sources})
+set(game_targets arcade_snake arcade_minesweeper)
+if(ARCADE_BONUS)
+    target_compile_definitions(arcade_minesweeper PRIVATE ARCADE_BONUS)
+    target_include_directories(arcade_minesweeper PRIVATE bonus)
+endif()
+
+add_custom_target(stage_core ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:arcade> "${PROJECT_SOURCE_DIR}/arcade"
+    DEPENDS arcade)
+add_custom_target(core DEPENDS stage_core)
+add_custom_target(stage_games ALL COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/lib"
+    DEPENDS ${game_targets})
+foreach(target IN LISTS game_targets)
+    add_custom_command(TARGET stage_games POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:${target}> "${PROJECT_SOURCE_DIR}/lib/$<TARGET_FILE_NAME:${target}>")
+endforeach()
+if(NOT ARCADE_BONUS)
+    foreach(game nibbler pacman qix centipede solarfox legacy legacy_graphics)
+        add_custom_command(TARGET stage_games POST_BUILD COMMAND ${CMAKE_COMMAND} -E rm -f "${PROJECT_SOURCE_DIR}/lib/arcade_${game}.so")
+    endforeach()
+endif()
+add_custom_target(games DEPENDS stage_games)
+
