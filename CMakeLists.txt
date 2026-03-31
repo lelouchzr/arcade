@@ -60,6 +60,10 @@ set(game_targets arcade_snake arcade_minesweeper)
 if(ARCADE_BONUS)
     target_compile_definitions(arcade_minesweeper PRIVATE ARCADE_BONUS)
     target_include_directories(arcade_minesweeper PRIVATE bonus)
+    add_library(arcade_game_support STATIC bonus/games/Grid.cpp)
+    target_link_libraries(arcade_game_support PUBLIC arcade_sdk)
+    arcade_plugin(arcade_nibbler bonus/games/nibbler/Nibbler.cpp)
+    list(APPEND game_targets arcade_nibbler)
 endif()
 
 add_custom_target(stage_core ALL
