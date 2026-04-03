@@ -17,6 +17,10 @@ void Snake::reset(std::uint64_t seed) {
     accumulated_ = 0;
     score_ = 0;
     status_ = Status::Running;
+#ifdef ARCADE_BONUS
+    pickup_.reset();
+    boostRemaining_ = 0;
+#endif
     spawnFood();
 }
 
@@ -32,6 +36,10 @@ void Snake::spawnFood() {
         return;
     }
     food_ = free[std::uniform_int_distribution<std::size_t>(0, free.size() - 1)(random_)];
+#ifdef ARCADE_BONUS
+    if (pickup_.active() && pickup_.position() == food_)
+        pickup_.clear();
+#endif
 }
 
 void Snake::step() {
@@ -52,13 +60,40 @@ void Snake::step() {
         spawnFood();
     } else
         body_.pop_back();
+#ifdef ARCADE_BONUS
+    if (bonusEnabled_ && pickup_.consume(head))
+        score_ += 250;
+#endif
 }
 
 void Snake::update(double seconds, const std::vector<Input> &inputs) {
     if (!std::isfinite(seconds) || seconds < 0 || seconds > 60)
         throw std::invalid_argument("invalid game delta time");
+#ifdef ARCADE_BONUS
+    for (const auto &input : inputs)
+        if (input.action == Action::Difficulty) {
+            bonusEnabled_ = !bonusEnabled_;
+            pickup_.reset();
+            boostRemaining_ = 0;
+        }
+#endif
     if (status_ != Status::Running)
         return;
+    queueTurns(inputs);
+#ifdef ARCADE_BONUS
+    if (bonusEnabled_) {
+        updateBonus(seconds, inputs);
+        return;
+    }
+#endif
+    accumulated_ += seconds;
+    while (accumulated_ + 1e-9 >= Step && status_ == Status::Running) {
+        accumulated_ -= Step;
+        step();
+    }
+}
+
+void Snake::queueTurns(const std::vector<Input> &inputs) {
     for (const auto &input : inputs) {
         Point candidate = direction_;
         switch (input.action) {
@@ -84,11 +119,6 @@ void Snake::update(double seconds, const std::vector<Input> &inputs) {
             turnQueued_ = true;
         }
     }
-    accumulated_ += seconds;
-    while (accumulated_ + 1e-9 >= Step && status_ == Status::Running) {
-        accumulated_ -= Step;
-        step();
-    }
 }
 
 Snapshot Snake::snapshot() const {
@@ -102,6 +132,12 @@ Snapshot Snake::snapshot() const {
                 view.cells[static_cast<std::size_t>(y * Width + x)] = Cell::Wall;
     if (food_.x >= 0)
         view.cells[static_cast<std::size_t>(food_.y * Width + food_.x)] = Cell::Food;
+#ifdef ARCADE_BONUS
+    if (bonusEnabled_ && pickup_.active()) {
+        const Point p = pickup_.position();
+        view.cells[static_cast<std::size_t>(p.y * Width + p.x)] = Cell::BonusFood;
+    }
+#endif
     for (auto point : body_)
         view.cells[static_cast<std::size_t>(point.y * Width + point.x)] = Cell::Body;
     view.cells[static_cast<std::size_t>(body_.front().y * Width + body_.front().x)] = Cell::Head;
@@ -109,6 +145,19 @@ Snapshot Snake::snapshot() const {
     view.status = status_;
     view.information = {"ARROWS  STEER", "EAT TO GROW", "AVOID WALLS AND BODY",
                         "LENGTH  " + std::to_string(body_.size()), "SPEED   7.14 CELLS/S"};
+#ifdef ARCADE_BONUS
+    view.information.push_back(bonusEnabled_ ? "D BONUS ON" : "D BONUS OFF");
+    if (bonusEnabled_) {
+        view.information.back() += " SPACE BOOST";
+        view.information[4] =
+            "SPEED   " + std::to_string(1 / stepInterval()).substr(0, 4) + " CELLS/S";
+        view.information.push_back(
+            pickup_.active()
+                ? "BONUS +250  " +
+                      std::to_string(static_cast<int>(std::ceil(pickup_.remaining()))) + "S"
+                : "BONUS +250 COOLDOWN 10S");
+    }
+#endif
     return view;
 }
 } // namespace arcade

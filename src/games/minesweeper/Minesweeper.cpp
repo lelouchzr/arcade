@@ -22,11 +22,20 @@ void Minesweeper::reset(std::uint64_t seed) {
     random_.seed(seed);
     ++generation_;
 #ifdef ARCADE_BONUS
-    const auto &difficulty = bonus::MineDifficulties[static_cast<std::size_t>(difficulty_)];
-    width_ = difficulty.width;
-    height_ = difficulty.height;
-    mineCount_ = difficulty.mines;
-    seconds_ = difficulty.seconds;
+    if (difficulty_ < 3) {
+        const auto &difficulty = bonus::MineDifficulties[static_cast<std::size_t>(difficulty_)];
+        width_ = difficulty.width;
+        height_ = difficulty.height;
+        mineCount_ = difficulty.mines;
+        seconds_ = difficulty.seconds;
+    } else {
+        width_ = custom_.width;
+        height_ = custom_.height;
+        mineCount_ = custom_.mines;
+        seconds_ = custom_.seconds;
+    }
+    editing_ = false;
+    animation_ = scared_ = 0;
 #else
     width_ = height_ = 9;
     mineCount_ = 10;
@@ -36,6 +45,9 @@ void Minesweeper::reset(std::uint64_t seed) {
     mines_.assign(size, false);
     revealed_.assign(size, false);
     flags_.assign(size, false);
+#ifdef ARCADE_BONUS
+    questions_.assign(size, false);
+#endif
     adjacent_.assign(size, 0);
     cursor_ = {width_ / 2, height_ / 2};
     planted_ = false;
@@ -86,6 +98,9 @@ void Minesweeper::reveal(int cell) {
         if (revealed_[current] || flags_[current] || mines_[current])
             continue;
         revealed_[current] = true;
+#ifdef ARCADE_BONUS
+        questions_[current] = false;
+#endif
         score_ += 10;
         if (!adjacent_[current]) {
             const auto around = neighbours(static_cast<int>(current));
@@ -103,12 +118,8 @@ void Minesweeper::update(double seconds, const std::vector<Input> &inputs) {
     if (!std::isfinite(seconds) || seconds < 0 || seconds > 60)
         throw std::invalid_argument("invalid game delta time");
 #ifdef ARCADE_BONUS
-    for (const auto &input : inputs)
-        if (input.action == Action::Difficulty) {
-            difficulty_ = (difficulty_ + 1) % static_cast<int>(bonus::MineDifficulties.size());
-            reset(seed_);
-            return;
-        }
+    if (updateBonuses(seconds, inputs))
+        return;
 #endif
     if (status_ != Status::Running)
         return;
@@ -136,12 +147,20 @@ void Minesweeper::update(double seconds, const std::vector<Input> &inputs) {
             break;
         case Action::Primary:
         case Action::Confirm:
+#ifdef ARCADE_BONUS
+            scared_ = 0.3;
+#endif
             reveal(index(cursor_));
             break;
         case Action::Secondary: {
             const auto cell = static_cast<std::size_t>(index(cursor_));
-            if (!revealed_[cell])
+            if (!revealed_[cell]) {
+#ifdef ARCADE_BONUS
+                mark(cell, input.text == '?');
+#else
                 flags_[cell] = !flags_[cell];
+#endif
+            }
             break;
         }
         default:
@@ -167,15 +186,20 @@ Snapshot Minesweeper::snapshot() const {
             view.cells.push_back(Cell::Mine);
         else if (revealed_[cell])
             view.cells.push_back(static_cast<Cell>(static_cast<int>(Cell::Zero) + adjacent_[cell]));
-        else
-            view.cells.push_back(flags_[cell] ? Cell::Flag : Cell::Hidden);
+        else {
+            Cell hidden = flags_[cell] ? Cell::Flag : Cell::Hidden;
+#ifdef ARCADE_BONUS
+            if (questions_[cell])
+                hidden = Cell::Question;
+#endif
+            view.cells.push_back(hidden);
+        }
     }
     const auto flags = std::count(flags_.begin(), flags_.end(), true);
     view.information = {"ARROWS   MOVE CURSOR", "SPACE    REVEAL", "F        TOGGLE FLAG",
                         "MINES    " + std::to_string(mineCount_ - flags), "FIRST REVEAL IS SAFE"};
 #ifdef ARCADE_BONUS
-    view.information.push_back(std::string("D  ") +
-                               bonus::MineDifficulties[static_cast<std::size_t>(difficulty_)].name);
+    decorate(view);
 #endif
     return view;
 }

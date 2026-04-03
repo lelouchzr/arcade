@@ -1,8 +1,15 @@
 #pragma once
+#include "../classics/TimedPickup.hpp"
 #include "arcade/Api.hpp"
+#include "original/OriginalLevels.hpp"
 #include <deque>
+#include <random>
 
 namespace arcade::bonus {
+namespace test {
+struct NibblerBonusAccess;
+}
+
 class Nibbler final : public IGame {
   public:
     Nibbler();
@@ -11,8 +18,10 @@ class Nibbler final : public IGame {
     Snapshot snapshot() const override;
 
   private:
+    friend struct test::NibblerBonusAccess;
     static constexpr int Width = 25, Height = 21;
-    std::uint64_t seed_ = 1;
+    int width_ = Width, height_ = Height;
+    std::uint64_t seed_ = 1, generation_ = 0;
     std::vector<Cell> map_;
     std::deque<Point> body_;
     Point direction_{1, 0}, desired_{1, 0};
@@ -24,5 +33,16 @@ class Nibbler final : public IGame {
     Point ahead(Point direction) const;
     void buildLevel();
     void move();
+    bool bonusEnabled_ = false, originalLevels_ = false;
+    double boostRemaining_ = 0;
+    TimedPickup pickup_;
+    std::mt19937_64 random_;
+    void updateClassic(double seconds);
+    void updateBonus(double seconds, const std::vector<Input> &inputs);
+    void spawnBonus();
+    void buildOriginalLevel();
+    [[nodiscard]] const OriginalLevel &originalLevel() const;
+    [[nodiscard]] double baseStep() const;
+    [[nodiscard]] double stepInterval() const;
 };
 } // namespace arcade::bonus

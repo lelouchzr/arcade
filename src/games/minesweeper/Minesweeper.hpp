@@ -1,8 +1,15 @@
 #pragma once
 #include "arcade/Api.hpp"
 #include <random>
+#ifdef ARCADE_BONUS
+#include "games/minesweeper/MineEditor.hpp"
+#endif
 
 namespace arcade {
+namespace test {
+struct MinesBonusAccess;
+}
+
 class Minesweeper final : public IGame {
   public:
     Minesweeper();
@@ -11,6 +18,7 @@ class Minesweeper final : public IGame {
     [[nodiscard]] Snapshot snapshot() const override;
 
   private:
+    friend struct test::MinesBonusAccess;
     int width_ = 9, height_ = 9, mineCount_ = 10;
     // Difficulty selection is compiled only in the bonus configuration.
     [[maybe_unused]] int difficulty_ = 0;
@@ -27,5 +35,15 @@ class Minesweeper final : public IGame {
     [[nodiscard]] std::vector<int> neighbours(int cell) const;
     void plant(int safeCell);
     void reveal(int cell);
+#ifdef ARCADE_BONUS
+    std::vector<bool> questions_;
+    bonus::MineConfiguration custom_;
+    bonus::MineEditor editor_;
+    bool editing_ = false;
+    double animation_ = 0, scared_ = 0;
+    bool updateBonuses(double seconds, const std::vector<Input> &inputs);
+    void mark(std::size_t cell, bool cycle);
+    void decorate(Snapshot &view) const;
+#endif
 };
 } // namespace arcade
