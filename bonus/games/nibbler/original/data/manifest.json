@@ -1,0 +1,501 @@
+{
+  "source_video": {
+    "url": "https://www.youtube.com/watch?v=60gVbJTOUOo",
+    "title": "MAME Nibbler BOT",
+    "creator": "FrankRizzo890",
+    "format_id": "133",
+    "sha256": "985b91d4df30d0f7114c75ae5f50ce83fd3c5a313bd1fc804ebbd3b91f67a41a",
+    "duration_seconds": 1109,
+    "decoded_width": 210,
+    "decoded_height": 240,
+    "sampling_filter": "fps=2",
+    "selection_note": "sample frame index is one-based; nominal timestamp=(index-1)/2, as assigned by ffmpeg fps filter"
+  },
+  "sources": {
+    "NibblerNotes.txt": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/NibblerNotes.txt",
+      "sha256": "abd2c3899013a6d4532d30a96ec779c806175cd4be194c34c6862cb5f6ff77f3"
+    },
+    "nibbler.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/nibbler.lua",
+      "sha256": "faa723fb684e33c9b915585627643c170acc5a1ad45963793d63c5eb6efd82d6"
+    },
+    "Maze1.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/Maze1.lua",
+      "sha256": "3141ec4fe76f805a7809c11636a087a3e4e1ba26aa2aa1e4d9b8eaa3db37111f"
+    },
+    "Maze2.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/Maze2.lua",
+      "sha256": "fb44273e195c117b454ceb18404616391194386f068b8417955070c6f1ddcd0d"
+    },
+    "Maze3.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/Maze3.lua",
+      "sha256": "b8ee2445cabb77b3e15b6077cb40e83bf7565a332303b9a6823be6d8616298ad"
+    },
+    "Maze4.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/Maze4.lua",
+      "sha256": "7e8f2ef0ba0c964e19f82bf3d441fbdc0eee7bbde652b2f707507ec780610153"
+    },
+    "Maze5.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/Maze5.lua",
+      "sha256": "014c8bdc75977e44aa1b0448d6327a1676907d48f3da74b19d56abde4be85f3e"
+    },
+    "Maze6.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/Maze6.lua",
+      "sha256": "b4e7206e1d1c4eccd7101c20daa626750bdc5baf86c823143243a2d91ec65512"
+    },
+    "Maze7.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/Maze7.lua",
+      "sha256": "782d144040e449ecd12e12ccbb5e9124ccaf0ae393e745af45f9f419de6313b3"
+    },
+    "Maze8.lua": {
+      "url": "https://github.com/FrankRizzo890/NibblerBot/blob/9511a82f8cb9a19ee4892d179581896d1a3de4d3/Maze8.lua",
+      "sha256": "3aaeae76792c9e9e7a0aea39aaeb90162916c74845bca1fa244ce6e220fbca5e"
+    }
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "maze": 1,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 2,
+      "speed_hard": 2,
+      "frame_index": 8,
+      "nominal_seconds": 3.5,
+      "frame_rgb_sha256": "8ee3d32f72a56c42f3b162abc7a4f7a90b53fbcce15119c98208100de3ef0594"
+    },
+    {
+      "wave": 2,
+      "maze": 2,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 2,
+      "speed_hard": 2,
+      "frame_index": 53,
+      "nominal_seconds": 26.0,
+      "frame_rgb_sha256": "532447ac8f96a741058d8d8c7627c025fec7c992afd1a4f48395390a815bb700"
+    },
+    {
+      "wave": 3,
+      "maze": 3,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 3,
+      "speed_hard": 3,
+      "frame_index": 85,
+      "nominal_seconds": 42.0,
+      "frame_rgb_sha256": "a55232a3a835dabd15f9857025ae5393e53f9d9f5954d60b29ae61102313f5fd"
+    },
+    {
+      "wave": 4,
+      "maze": 4,
+      "fruit_pattern": 2,
+      "fruits": 28,
+      "speed_easy": 3,
+      "speed_hard": 4,
+      "frame_index": 110,
+      "nominal_seconds": 54.5,
+      "frame_rgb_sha256": "6d4c0de4fcf14a8b23139d1dd49049b601e655f5a8b143b64f99d28165363c4a"
+    },
+    {
+      "wave": 5,
+      "maze": 2,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 3,
+      "speed_hard": 4,
+      "frame_index": 137,
+      "nominal_seconds": 68.0,
+      "frame_rgb_sha256": "744ac70705c7656ac8f6a27cd72de9325046c0f62814d35f50f0b47da5ea62dc"
+    },
+    {
+      "wave": 6,
+      "maze": 3,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 3,
+      "speed_hard": 5,
+      "frame_index": 160,
+      "nominal_seconds": 79.5,
+      "frame_rgb_sha256": "935adc88426030b86b39fa7dd257f8687e05750747b0676ed5448691a114c2a6"
+    },
+    {
+      "wave": 7,
+      "maze": 1,
+      "fruit_pattern": 3,
+      "fruits": 28,
+      "speed_easy": 4,
+      "speed_hard": 5,
+      "frame_index": 182,
+      "nominal_seconds": 90.5,
+      "frame_rgb_sha256": "8b651e755ffaea0026a1d69b3058b74c80ff2e1e008e8b98e19909d3d0b6b94c"
+    },
+    {
+      "wave": 8,
+      "maze": 2,
+      "fruit_pattern": 4,
+      "fruits": 29,
+      "speed_easy": 4,
+      "speed_hard": 5,
+      "frame_index": 209,
+      "nominal_seconds": 104.0,
+      "frame_rgb_sha256": "9624c33f9efa770cb01621ef3b500e03d29faaaf329e27515eb64fa2934dd02e"
+    },
+    {
+      "wave": 9,
+      "maze": 3,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 4,
+      "speed_hard": 6,
+      "frame_index": 235,
+      "nominal_seconds": 117.0,
+      "frame_rgb_sha256": "9c273c31e08860ef5724812b785dd30ba0919d92870f043449284ce7fb16860d"
+    },
+    {
+      "wave": 10,
+      "maze": 4,
+      "fruit_pattern": 2,
+      "fruits": 28,
+      "speed_easy": 4,
+      "speed_hard": 6,
+      "frame_index": 259,
+      "nominal_seconds": 129.0,
+      "frame_rgb_sha256": "7b98f30a2833ae2b4bd28654a4532d42b5b5aef389809a5a29f74342e7762b11"
+    },
+    {
+      "wave": 11,
+      "maze": 5,
+      "fruit_pattern": 5,
+      "fruits": 29,
+      "speed_easy": 5,
+      "speed_hard": 6,
+      "frame_index": 281,
+      "nominal_seconds": 140.0,
+      "frame_rgb_sha256": "89405e3c45779988081d8e1c014fa11515f25164db94fa97074babb6c72030bf"
+    },
+    {
+      "wave": 12,
+      "maze": 2,
+      "fruit_pattern": 6,
+      "fruits": 26,
+      "speed_easy": 5,
+      "speed_hard": 6,
+      "frame_index": 300,
+      "nominal_seconds": 149.5,
+      "frame_rgb_sha256": "87b04f1c1b007a7eea01bb6073d01d8c3971f34c142f2ac21762f458e6e17f6e"
+    },
+    {
+      "wave": 13,
+      "maze": 6,
+      "fruit_pattern": 7,
+      "fruits": 29,
+      "speed_easy": 5,
+      "speed_hard": 6,
+      "frame_index": 323,
+      "nominal_seconds": 161.0,
+      "frame_rgb_sha256": "d7a7927e606706d3fc9fb5f51819285594def97c6d1ad78d22a58c5c549e8a7b"
+    },
+    {
+      "wave": 14,
+      "maze": 1,
+      "fruit_pattern": 3,
+      "fruits": 28,
+      "speed_easy": 5,
+      "speed_hard": 6,
+      "frame_index": 345,
+      "nominal_seconds": 172.0,
+      "frame_rgb_sha256": "f00736249d71d7e757c2fd33395ae12aff8c26e80ef23990c97db4eb471ee502"
+    },
+    {
+      "wave": 15,
+      "maze": 7,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 6,
+      "speed_hard": 7,
+      "frame_index": 374,
+      "nominal_seconds": 186.5,
+      "frame_rgb_sha256": "96ebbe645b7de0a8936a318c869bb1a8994bdf6d48e2616727b45bcedd004e39"
+    },
+    {
+      "wave": 16,
+      "maze": 8,
+      "fruit_pattern": 8,
+      "fruits": 28,
+      "speed_easy": 6,
+      "speed_hard": 7,
+      "frame_index": 395,
+      "nominal_seconds": 197.0,
+      "frame_rgb_sha256": "683953cec031b114deeb115e52179738a400ac508078fd2222c287c34801d8c4"
+    },
+    {
+      "wave": 17,
+      "maze": 5,
+      "fruit_pattern": 9,
+      "fruits": 29,
+      "speed_easy": 6,
+      "speed_hard": 7,
+      "frame_index": 415,
+      "nominal_seconds": 207.0,
+      "frame_rgb_sha256": "9db3cff9a382d651f920a7df4f2ef9196e77897be4a7fd481e2c08e51d6f85f9"
+    },
+    {
+      "wave": 18,
+      "maze": 3,
+      "fruit_pattern": 2,
+      "fruits": 28,
+      "speed_easy": 6,
+      "speed_hard": 7,
+      "frame_index": 434,
+      "nominal_seconds": 216.5,
+      "frame_rgb_sha256": "9d6630b6a3d7817394bd07afcc374585bf4b61e73b2c201d4615eb75f5a08ffa"
+    },
+    {
+      "wave": 19,
+      "maze": 6,
+      "fruit_pattern": 7,
+      "fruits": 29,
+      "speed_easy": 6,
+      "speed_hard": 7,
+      "frame_index": 452,
+      "nominal_seconds": 225.5,
+      "frame_rgb_sha256": "1e71c30eeb8c8325af2980a02c55197fc0afc64d0ba743eea8ee6fdbefa0d474"
+    },
+    {
+      "wave": 20,
+      "maze": 4,
+      "fruit_pattern": 10,
+      "fruits": 27,
+      "speed_easy": 6,
+      "speed_hard": 7,
+      "frame_index": 469,
+      "nominal_seconds": 234.0,
+      "frame_rgb_sha256": "4ed5921b75e232d1de10f5b8e2dcf7a6a3579e886a6e29f9abf057b9afbc0209"
+    },
+    {
+      "wave": 21,
+      "maze": 5,
+      "fruit_pattern": 5,
+      "fruits": 29,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 484,
+      "nominal_seconds": 241.5,
+      "frame_rgb_sha256": "51a5f1814a9d81028be8f0b15b941d132a4c9379e7f7157aba91b19c9bdf7be1"
+    },
+    {
+      "wave": 22,
+      "maze": 8,
+      "fruit_pattern": 8,
+      "fruits": 28,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 505,
+      "nominal_seconds": 252.0,
+      "frame_rgb_sha256": "7327af0ab24d001e581ac71407b657284cb8be69003d2150d1285caf74cd1260"
+    },
+    {
+      "wave": 23,
+      "maze": 7,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 526,
+      "nominal_seconds": 262.5,
+      "frame_rgb_sha256": "d443fc495e116483821858dda2e90683583a93f8b0b7dd76640064eac1775437"
+    },
+    {
+      "wave": 24,
+      "maze": 1,
+      "fruit_pattern": 3,
+      "fruits": 28,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 546,
+      "nominal_seconds": 272.5,
+      "frame_rgb_sha256": "4a691bf49d94a4f771ea98667a7c6e8a5b54ce71906ea68b238d98d81b2fb9ad"
+    },
+    {
+      "wave": 25,
+      "maze": 6,
+      "fruit_pattern": 7,
+      "fruits": 29,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 575,
+      "nominal_seconds": 287.0,
+      "frame_rgb_sha256": "ce448b349088b221e8775b2c6a6a83856d8e453b9e73e68d8a97179ac091cc8c"
+    },
+    {
+      "wave": 26,
+      "maze": 5,
+      "fruit_pattern": 9,
+      "fruits": 29,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 592,
+      "nominal_seconds": 295.5,
+      "frame_rgb_sha256": "9ac028592e0f538995eda445ddbebe4e955d985ef41a7568683629ee5acc3651"
+    },
+    {
+      "wave": 27,
+      "maze": 8,
+      "fruit_pattern": 8,
+      "fruits": 28,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 612,
+      "nominal_seconds": 305.5,
+      "frame_rgb_sha256": "b07ba094929be0104bdde4965d94280116826d1ab5ce1f99d9469a7dbc03fc93"
+    },
+    {
+      "wave": 28,
+      "maze": 4,
+      "fruit_pattern": 10,
+      "fruits": 27,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 632,
+      "nominal_seconds": 315.5,
+      "frame_rgb_sha256": "47f61f9f78671b8a8504013d74d4ee600def0348199b2e1f2c5c16a9643f053c"
+    },
+    {
+      "wave": 29,
+      "maze": 7,
+      "fruit_pattern": 1,
+      "fruits": 28,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 648,
+      "nominal_seconds": 323.5,
+      "frame_rgb_sha256": "f90ca5b276ccdb9805e4c232bc3098c0488b18b1ce581bb65cdb9e23d537a492"
+    },
+    {
+      "wave": 30,
+      "maze": 3,
+      "fruit_pattern": 11,
+      "fruits": 30,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 668,
+      "nominal_seconds": 333.5,
+      "frame_rgb_sha256": "479a82d766eb904a876ae29181a933f0784905b3a4552513003c0ee5290affe6"
+    },
+    {
+      "wave": 31,
+      "maze": 5,
+      "fruit_pattern": 9,
+      "fruits": 29,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 698,
+      "nominal_seconds": 348.5,
+      "frame_rgb_sha256": "c9e89155d48cce039e5ea22ef76597be91a7778c19bf7231b9b4f19b0be7b717"
+    },
+    {
+      "wave": 32,
+      "maze": 8,
+      "fruit_pattern": 8,
+      "fruits": 28,
+      "speed_easy": 7,
+      "speed_hard": 7,
+      "frame_index": 718,
+      "nominal_seconds": 358.5,
+      "frame_rgb_sha256": "f2e4af94f2316c82bb1272467989b345489747d8711c27bd841a51f0ad49c511"
+    }
+  ],
+  "fruit_counts": [
+    28,
+    28,
+    28,
+    29,
+    29,
+    26,
+    29,
+    28,
+    29,
+    27,
+    30
+  ],
+  "certification_scope": [
+    "maze topology",
+    "food positions in 8px tile coordinates",
+    "32-wave composition",
+    "speed codes"
+  ],
+  "not_emulated": [
+    "cycle/frame-perfect timing",
+    "graphics palette",
+    "original growth rate",
+    "6502 corner-buffer overflow",
+    "original life counter"
+  ],
+  "period_model": "8 / (60 * speed) seconds per tile; 60 Hz gameplay model, not a verified emulator timing",
+  "geometry_frames": {
+    "1": 8,
+    "2": 53,
+    "3": 85,
+    "4": 110,
+    "5": 281,
+    "6": 323,
+    "7": 374,
+    "8": 395
+  },
+  "source_date": "2026-10-29",
+  "nibblerbot_revision": "9511a82f8cb9a19ee4892d179581896d1a3de4d3",
+  "decoder": "ffmpeg 9.0.2, fps=2, PNG output converted to RGB with Pillow",
+  "grid_note": "27x27 logical 8px tiles; geometry represented as a 19-node outline lattice then expanded by alternating 1/2 tiles; interior decorative posts remain nonwalkable lattice separators.",
+  "guide_crosschecks": [
+    {
+      "wave": 1,
+      "url": "https://craftymech.com/wp-content/uploads/2018/02/nibbler_w1.jpg",
+      "sha256": "4018f62424ce5313833044d4b6d9e3549cc0359ea565aa2d7644d6e72a0ad371",
+      "method": "visual comparison of visible wall geometry; moving snake occludes some cells"
+    },
+    {
+      "wave": 6,
+      "url": "https://craftymech.com/wp-content/uploads/2018/02/nibbler_w6.jpg",
+      "sha256": "63b23bd5bb68b644c9da895968f0cb378914ee186009a7b7bb93c3a8ad9e0af5",
+      "method": "visual comparison of visible wall geometry; moving snake occludes some cells"
+    },
+    {
+      "wave": 7,
+      "url": "https://craftymech.com/wp-content/uploads/2018/02/nibbler_w7.jpg",
+      "sha256": "c1df9eea9f7ff7ef647fc70fba377422d88e40222de360bb97a41a75aed21747",
+      "method": "visual comparison of visible wall geometry; moving snake occludes some cells"
+    },
+    {
+      "wave": 11,
+      "url": "https://craftymech.com/wp-content/uploads/2018/02/nibbler_w11.jpg",
+      "sha256": "882aaf7d01318ff10e3549bbd8863a3154b958d99dc3c87b4e7b8c876dcee1a6",
+      "method": "visual comparison of visible wall geometry; moving snake occludes some cells"
+    },
+    {
+      "wave": 16,
+      "url": "https://craftymech.com/wp-content/uploads/2018/02/nibbler_w16.jpg",
+      "sha256": "3af5988f3a2cb27f4fc98e2b1fc2ee94eb25369ec8445cbee69f2af4c4948922",
+      "method": "visual comparison of visible wall geometry; moving snake occludes some cells"
+    },
+    {
+      "wave": 17,
+      "url": "https://craftymech.com/wp-content/uploads/2018/02/nibbler_w17.jpg",
+      "sha256": "866c14591fbce5bee541d63523763708df464c275b46f290af894beac6a04556",
+      "method": "visual comparison of visible wall geometry; moving snake occludes some cells"
+    },
+    {
+      "wave": 18,
+      "url": "https://craftymech.com/wp-content/uploads/2018/02/nibbler_w18.jpg",
+      "sha256": "7dfbc855fd268d373c2433c2431f3dd299a35338d4eaa03b7401a4d157ca42ca",
+      "method": "visual comparison of visible wall geometry; moving snake occludes some cells"
+    },
+    {
+      "wave": 23,
+      "url": "https://craftymech.com/wp-content/uploads/2018/02/nibbler_w23.jpg",
+      "sha256": "e48537bd58306bd8ccc77cc76b4c53aea63a64fafeb8c00d40980608b4fbf5fb",
+      "method": "visual comparison of visible wall geometry; moving snake occludes some cells"
+    }
+  ]
+}

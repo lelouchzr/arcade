@@ -1,0 +1,21 @@
+{
+  "geometries": 8,
+  "fruit_patterns": 11,
+  "waves": 32,
+  "decoded_frame_hashes": 32,
+  "primary_routes": 90,
+  "route_wall_collisions": 0,
+  "fruit_counts": [
+    28,
+    28,
+    28,
+    29,
+    29,
+    26,
+    29,
+    28,
+    29,
+    27,
+    30
+  ]
+}
