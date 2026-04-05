@@ -14,6 +14,7 @@ Centipede::Centipede(CentipedeRules rules) : rules_(rules) {
 }
 
 void Centipede::reset(std::uint64_t seed) {
+    seed_ = seed;
     random_.seed(seed);
     ++generation_;
     score_ = 0;
@@ -22,6 +23,9 @@ void Centipede::reset(std::uint64_t seed) {
     status_ = Status::Running;
     accumulated_ = movementClock_ = shotClock_ = 0;
     player_ = {12, 20};
+    secondPlayer_ = {6, 20};
+    spawnClock_ = 0;
+    spawnSequence_ = 0;
     shot_.reset();
     buildField();
     spawnWave();
@@ -47,11 +51,18 @@ void Centipede::spawnWave() {
             {right ? rules_.initialLength - 1 - i : Width - rules_.initialLength + i, 0});
     bodies_ = {std::move(body)};
     movementClock_ = 0;
+    spawnClock_ = 0;
+    if (rules_.bonus) {
+        spawnBonusBody(CentipedeType::Racer);
+        spawnBonusBody(CentipedeType::Weaver);
+    }
 }
 
 void Centipede::collisions() {
     for (const auto &body : bodies_)
-        if (std::find(body.segments.begin(), body.segments.end(), player_) != body.segments.end()) {
+        if (std::find(body.segments.begin(), body.segments.end(), player_) != body.segments.end() ||
+            (rules_.bonus && std::find(body.segments.begin(), body.segments.end(), secondPlayer_) !=
+                                 body.segments.end())) {
             status_ = Status::Lost;
             return;
         }
@@ -76,6 +87,11 @@ void Centipede::tick(double seconds) {
         shotClock_ -= rules_.shotPeriod;
         moveShot();
     }
+    if (rules_.bonus) {
+        tickBonusBodies(seconds);
+        finishWave();
+        return;
+    }
     const double period = rules_.movementPeriod / (1.0 + 0.08 * (level_ - 1));
     if (movementClock_ + 1e-9 >= period) {
         movementClock_ -= period;
@@ -86,19 +102,28 @@ void Centipede::tick(double seconds) {
 
 void Centipede::update(double seconds, const std::vector<Input> &inputs) {
     validateDelta(seconds);
+    for (const auto &input : inputs)
+        if (input.action == Action::Difficulty) {
+            rules_.bonus = !rules_.bonus;
+            reset(seed_);
+            return;
+        }
     if (status_ != Status::Running)
         return;
     for (const auto &input : inputs) {
         const auto d = direction(input.action);
         if (d != Point{}) {
             const auto next = add(player_, d);
-            if (board_.contains(next) && next.y >= PlayerTop && obstacles_[board_.index(next)] == 0)
+            if (board_.contains(next) && next.y >= PlayerTop &&
+                obstacles_[board_.index(next)] == 0 && (!rules_.bonus || next != secondPlayer_))
                 player_ = next;
         }
         if (input.action == Action::Primary && !shot_) {
             shot_ = player_;
             shotClock_ = 0;
         }
+        if (rules_.bonus)
+            moveSecondPlayer(input.action);
         collisions();
     }
     accumulated_ += seconds;

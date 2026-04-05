@@ -5,26 +5,34 @@
 
 namespace arcade::test {
 struct SolarfoxAccess;
-}
+struct SolarfoxBonusAccess;
+} // namespace arcade::test
 
 namespace arcade::bonus {
+
+enum class SolarShotType { Standard, Slow, Fast, Spread };
 
 struct SolarShot {
     Point position;
     Point direction;
     int remaining = 2;
+    SolarShotType type = SolarShotType::Standard;
+    double clock = 0;
 };
 
 struct EnemyGun {
     Point position;
     Point direction;
     double clock = 0;
+    SolarShotType type = SolarShotType::Standard;
+    int patrol = 1;
 };
 
 struct SolarfoxRules {
     double movementPeriod = 0.18;
     double enemyShotPeriod = 0.09;
     double gunPeriod = 1.1;
+    bool bonus = false;
 };
 
 class Solarfox final : public IGame {
@@ -36,6 +44,7 @@ class Solarfox final : public IGame {
 
   private:
     friend struct arcade::test::SolarfoxAccess;
+    friend struct arcade::test::SolarfoxBonusAccess;
     static constexpr int Width = 25;
     static constexpr int Height = 21;
     static constexpr int Margin = 3;
@@ -57,11 +66,19 @@ class Solarfox final : public IGame {
     double enemyShotClock_ = 0;
     double boost_ = 0;
     bool turnQueued_ = false;
+    std::uint64_t seed_ = 1;
+    double patrolClock_ = 0;
     Status status_ = Status::Running;
     void buildLevel();
     void tick(double seconds);
     void movePlayer();
     void moveShots(bool enemy);
+    void advanceShot(SolarShot &shot);
+    void collectShots();
+    void initializeBonuses();
+    void fireGun(const EnemyGun &gun);
+    void moveGuns();
+    void moveBonusShots(double seconds);
     void intercept();
     void collisions();
     [[nodiscard]] bool walkable(Point point) const;

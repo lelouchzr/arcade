@@ -14,5 +14,10 @@ void pacmanTests();
 void qixTests();
 void centipedeTests();
 void solarfoxTests();
+void pacmanBonusTests();
+void qixBonusTests();
+void centipedeBonusTests();
+void solarfoxBonusTests();
+void originalLevelsTests();
 
 } // namespace arcade::test

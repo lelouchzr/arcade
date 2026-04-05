@@ -14,6 +14,7 @@ Qix::Qix(QixRules rules) : rules_(rules) {
 }
 
 void Qix::reset(std::uint64_t seed) {
+    seed_ = seed;
     random_.seed(seed);
     ++generation_;
     board_.fill(Cell::Empty);
@@ -34,6 +35,7 @@ void Qix::reset(std::uint64_t seed) {
     fireIndex_ = 0;
     burning_ = false;
     status_ = Status::Running;
+    initializeBonuses();
 }
 
 void Qix::lose() {
@@ -46,6 +48,8 @@ void Qix::lose() {
 }
 
 void Qix::collisions() {
+    if (rules_.bonus && shield_ > 0)
+        return;
     for (auto point : monster_)
         if (point == player_ || board_.at(point) == Cell::Trail) {
             lose();
@@ -63,7 +67,7 @@ void Qix::movePlayer() {
         return;
     const auto next = board_.wrap(add(player_, heading_));
     const auto cell = board_.at(next);
-    if (cell == Cell::Claimed || cell == Cell::Trail) {
+    if (cell == Cell::Claimed || cell == Cell::Trail || cell == Cell::Obstacle) {
         heading_ = {};
         return;
     }
@@ -75,6 +79,7 @@ void Qix::movePlayer() {
         trail_.push_back(next);
     }
     player_ = next;
+    collectBonuses();
     idle_ = 0;
     collisions();
     if (status_ == Status::Running && cell == Cell::Boundary && !trail_.empty())
@@ -102,10 +107,12 @@ void Qix::moveMonster() {
 }
 
 void Qix::tick(double seconds) {
+    tickBonuses(seconds);
     idle_ += seconds;
     playerClock_ += seconds;
-    monsterClock_ += seconds;
-    sparkClock_ += seconds;
+    const double enemyTime = slow_ > 0 ? seconds * 0.4 : seconds;
+    monsterClock_ += enemyTime;
+    sparkClock_ += enemyTime;
     if (playerClock_ + 1e-9 >= rules_.playerPeriod) {
         playerClock_ -= rules_.playerPeriod;
         movePlayer();
@@ -122,7 +129,7 @@ void Qix::tick(double seconds) {
         sparkClock_ -= rules_.sparkPeriod;
         moveSparks();
     }
-    if (status_ != Status::Running || trail_.empty())
+    if (status_ != Status::Running || trail_.empty() || shield_ > 0)
         return;
     if (!burning_ && idle_ + 1e-9 >= rules_.ignitionDelay) {
         burning_ = true;
@@ -142,6 +149,12 @@ void Qix::tick(double seconds) {
 
 void Qix::update(double seconds, const std::vector<Input> &inputs) {
     validateDelta(seconds);
+    for (const auto &input : inputs)
+        if (input.action == Action::Difficulty) {
+            rules_.bonus = !rules_.bonus;
+            reset(seed_);
+            return;
+        }
     if (status_ != Status::Running)
         return;
     for (const auto &input : inputs) {

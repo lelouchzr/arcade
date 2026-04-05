@@ -3,32 +3,43 @@
 
 namespace arcade::bonus {
 
-void Centipede::moveBodies() {
-    for (auto &body : bodies_) {
-        auto next = add(body.segments.front(), {body.direction, 0});
-        if (body.pendingSplitTurn || !board_.contains(next) || obstacles_[board_.index(next)] > 0) {
-            const int reversed = -body.direction;
-            next = {body.segments.front().x, body.segments.front().y + 1};
-            if (board_.contains(next) && obstacles_[board_.index(next)] > 0) {
-                next.x += reversed;
-                if (!board_.contains(next) || obstacles_[board_.index(next)] > 0)
-                    continue;
-            }
-            body.direction = reversed;
-            body.pendingSplitTurn = false;
+void Centipede::moveBody(CentipedeBody &body) {
+    auto next = add(body.segments.front(), {body.direction, 0});
+    const bool weave =
+        rules_.bonus && body.type == CentipedeType::Weaver && body.steps > 0 && body.steps % 6 == 0;
+    if (weave || body.pendingSplitTurn || !board_.contains(next) ||
+        obstacles_[board_.index(next)] > 0) {
+        const int reversed = -body.direction;
+        next = {body.segments.front().x, body.segments.front().y + 1};
+        if (board_.contains(next) && obstacles_[board_.index(next)] > 0) {
+            next.x += reversed;
+            if (!board_.contains(next) || obstacles_[board_.index(next)] > 0)
+                return;
         }
-        for (std::size_t i = body.segments.size() - 1; i > 0; --i)
-            body.segments[i] = body.segments[i - 1];
-        body.segments[0] = next;
-        if (next.y >= Height - 1 && !body.bottomCharged) {
-            score_ = std::max<std::int64_t>(0, score_ - 100);
-            body.bottomCharged = true;
-        }
+        body.direction = reversed;
+        body.pendingSplitTurn = false;
     }
+    for (std::size_t i = body.segments.size() - 1; i > 0; --i)
+        body.segments[i] = body.segments[i - 1];
+    body.segments[0] = next;
+    ++body.steps;
+    if (next.y >= Height - 1 && !body.bottomCharged) {
+        score_ = std::max<std::int64_t>(0, score_ - 100);
+        body.bottomCharged = true;
+    }
+}
+
+void Centipede::resolveBodies() {
     collisions();
     std::erase_if(bodies_,
                   [](const CentipedeBody &body) { return body.segments.front().y >= Height; });
     hitShot();
+}
+
+void Centipede::moveBodies() {
+    for (auto &body : bodies_)
+        moveBody(body);
+    resolveBodies();
 }
 
 void Centipede::split(std::size_t bodyIndex, std::size_t segmentIndex) {
@@ -43,6 +54,9 @@ void Centipede::split(std::size_t bodyIndex, std::size_t segmentIndex) {
     }
     if (segmentIndex + 1 < original.segments.size()) {
         CentipedeBody tail;
+        tail.type = original.type;
+        tail.clock = original.clock;
+        tail.steps = original.steps;
         tail.segments.assign(original.segments.begin() +
                                  static_cast<std::ptrdiff_t>(segmentIndex + 1),
                              original.segments.end());

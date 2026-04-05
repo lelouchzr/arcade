@@ -13,7 +13,7 @@ Solarfox::Solarfox(SolarfoxRules rules) : rules_(rules) {
 }
 
 void Solarfox::reset(std::uint64_t seed) {
-    (void)seed;
+    seed_ = seed;
     ++generation_;
     score_ = 0;
     level_ = 1;
@@ -22,7 +22,8 @@ void Solarfox::reset(std::uint64_t seed) {
 }
 
 bool Solarfox::walkable(Point p) const {
-    return p.x >= Margin && p.x < Width - Margin && p.y >= Margin && p.y < Height - Margin;
+    return p.x >= Margin && p.x < Width - Margin && p.y >= Margin && p.y < Height - Margin &&
+           board_.at(p) != Cell::Obstacle;
 }
 
 void Solarfox::buildLevel() {
@@ -47,6 +48,8 @@ void Solarfox::buildLevel() {
     enemyShots_.clear();
     accumulated_ = movementClock_ = shotClock_ = enemyShotClock_ = boost_ = 0;
     turnQueued_ = false;
+    patrolClock_ = 0;
+    initializeBonuses();
 }
 
 void Solarfox::collisions() {
@@ -75,18 +78,27 @@ void Solarfox::tick(double seconds) {
     movementClock_ += seconds;
     shotClock_ += seconds;
     enemyShotClock_ += seconds;
+    if (rules_.bonus) {
+        patrolClock_ += seconds;
+        if (patrolClock_ + 1e-9 >= .24) {
+            patrolClock_ -= .24;
+            moveGuns();
+        }
+    }
     for (auto &gun : guns_) {
         gun.clock += seconds;
         if (gun.clock + 1e-9 >= rules_.gunPeriod / (1.0 + 0.06 * (level_ - 1))) {
             gun.clock = 0;
-            enemyShots_.push_back({gun.position, gun.direction, Width + Height});
+            fireGun(gun);
         }
     }
     if (shotClock_ + 1e-9 >= period / 4.0) {
         shotClock_ -= period / 4.0;
         moveShots(false);
     }
-    if (enemyShotClock_ + 1e-9 >= rules_.enemyShotPeriod) {
+    if (rules_.bonus)
+        moveBonusShots(seconds);
+    else if (enemyShotClock_ + 1e-9 >= rules_.enemyShotPeriod) {
         enemyShotClock_ -= rules_.enemyShotPeriod;
         moveShots(true);
     }
@@ -104,6 +116,12 @@ void Solarfox::tick(double seconds) {
 
 void Solarfox::update(double seconds, const std::vector<Input> &inputs) {
     validateDelta(seconds);
+    for (const auto &input : inputs)
+        if (input.action == Action::Difficulty) {
+            rules_.bonus = !rules_.bonus;
+            reset(seed_);
+            return;
+        }
     if (status_ != Status::Running)
         return;
     for (const auto &input : inputs) {

@@ -37,7 +37,7 @@ void Qix::capture() {
         }
     const auto previous = board_.cells();
     for (std::size_t i = 0; i < previous.size(); ++i) {
-        if (previous[i] == Cell::Empty)
+        if (previous[i] == Cell::Empty || previous[i] == Cell::Obstacle)
             continue;
         const auto point = board_.point(i);
         bool adjacent = false;
@@ -62,10 +62,13 @@ void Qix::capture() {
             }
         player_ = closest;
     }
+    std::erase_if(pickups_, [&](const QixPickup &pickup) {
+        return board_.at(pickup.position) != Cell::Empty;
+    });
     anchor_ = player_;
     const int remaining =
         static_cast<int>(std::count(board_.cells().begin(), board_.cells().end(), Cell::Empty));
-    if (remaining * 4 < (Width - 2) * (Height - 2))
+    if (remaining * 4 < originalArea_)
         status_ = Status::Won;
 }
 

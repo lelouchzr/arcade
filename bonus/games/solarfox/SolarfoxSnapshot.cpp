@@ -12,7 +12,10 @@ Snapshot Solarfox::snapshot() const {
             view.cells[board_.index(shot.position)] = Cell::Projectile;
     for (const auto &shot : enemyShots_)
         if (board_.contains(shot.position))
-            view.cells[board_.index(shot.position)] = Cell::EnemyProjectile;
+            view.cells[board_.index(shot.position)] =
+                shot.type == SolarShotType::Slow   ? Cell::SlowProjectile
+                : shot.type == SolarShotType::Fast ? Cell::FastProjectile
+                                                   : Cell::EnemyProjectile;
     if (board_.contains(player_))
         view.cells[board_.index(player_)] = Cell::Ship;
     view.score = score_;
@@ -25,6 +28,9 @@ Snapshot Solarfox::snapshot() const {
                         "LEVEL    " + std::to_string(level_),
                         "SHOT RANGE 2 CELLS",
                         "SHOOT TO COLLECT"};
+    view.information[6] = rules_.bonus ? "D CLASSIC / MOVING GUNS" : "D/F7 BONUS / SHOOT";
+    if (rules_.bonus)
+        view.information[5] = "SLOW FAST SPREAD SHOTS";
     return view;
 }
 

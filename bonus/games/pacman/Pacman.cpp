@@ -6,8 +6,10 @@
 namespace arcade::bonus {
 
 Pacman::Pacman(PacmanRules rules) : rules_(rules) {
-    for (double value : {rules.releaseDelay, rules.powerDuration, rules.healingDuration,
-                         rules.playerPeriod, rules.ghostPeriod})
+    for (double value :
+         {rules.releaseDelay, rules.powerDuration, rules.healingDuration, rules.playerPeriod,
+          rules.ghostPeriod, rules.fruitDelay, rules.fruitDuration, rules.fruitInterval,
+          rules.jumpDuration, rules.jumpCooldown, rules.ghostJumpInterval})
         if (!std::isfinite(value) || value <= 0)
             throw std::invalid_argument("invalid Pacman rules");
     reset(1);
@@ -17,6 +19,7 @@ void Pacman::reset(std::uint64_t seed) {
     seed_ = seed;
     ++generation_;
     score_ = 0;
+    bonusElapsed_ = 0;
     level_ = 1;
     status_ = Status::Running;
     buildLevel();
@@ -46,6 +49,9 @@ void Pacman::buildLevel() {
         std::count(board_.cells().begin(), board_.cells().end(), Cell::PowerPellet));
     elapsed_ = power_ = accumulated_ = playerClock_ = 0;
     combo_ = 0;
+    jump_ = {};
+    fruitActive_ = false;
+    fruitClock_ = rules_.fruitDelay;
 }
 
 bool Pacman::walkable(Point p, bool homeAllowed) const {
@@ -54,6 +60,7 @@ bool Pacman::walkable(Point p, bool homeAllowed) const {
 }
 
 void Pacman::consume() {
+    collectFruit();
     auto &cell = board_.at(player_);
     if (cell != Cell::Pellet && cell != Cell::PowerPellet)
         return;
@@ -82,11 +89,12 @@ void Pacman::movePlayer() {
 
 void Pacman::collisions() {
     for (auto &ghost : ghosts_) {
-        if (ghost.position != player_ || ghost.mode != GhostMode::Active)
+        if (ghost.position != player_ || ghost.mode != GhostMode::Active || !sameHeight(ghost))
             continue;
         if (power_ > 0) {
             ghost.mode = GhostMode::Eyes;
             ghost.clock = 0;
+            ghost.jump = {};
             score_ += 200LL * (1LL << std::min(combo_++, 3));
         } else
             status_ = Status::Lost;
@@ -95,11 +103,13 @@ void Pacman::collisions() {
 
 void Pacman::tick(double seconds) {
     elapsed_ += seconds;
+    if (rules_.bonusEnabled)
+        bonusTick(seconds);
     power_ = std::max(0.0, power_ - seconds);
     playerClock_ += seconds;
-    const double acceleration = 1.0 + 0.08 * (level_ - 1);
-    if (playerClock_ + 1e-9 >= rules_.playerPeriod / acceleration) {
-        playerClock_ -= rules_.playerPeriod / acceleration;
+    const double speed = acceleration();
+    if (playerClock_ + 1e-9 >= rules_.playerPeriod / speed) {
+        playerClock_ -= rules_.playerPeriod / speed;
         movePlayer();
     }
     if (status_ != Status::Running)
@@ -120,7 +130,7 @@ void Pacman::tick(double seconds) {
         ghost.clock += seconds;
         const double period = ghost.mode == GhostMode::Eyes
                                   ? rules_.ghostPeriod * 0.35
-                                  : rules_.ghostPeriod * (power_ > 0 ? 1.6 : 1.0) / acceleration;
+                                  : rules_.ghostPeriod * (power_ > 0 ? 1.6 : 1.0) / speed;
         if (ghost.clock + 1e-9 >= period) {
             ghost.clock -= period;
             moveGhost(i);
@@ -133,9 +143,11 @@ void Pacman::update(double seconds, const std::vector<Input> &inputs) {
     validateDelta(seconds);
     if (status_ != Status::Running)
         return;
-    for (const auto &input : inputs)
+    for (const auto &input : inputs) {
+        bonusInput(input.action);
         if (direction(input.action) != Point{})
             desired_ = direction(input.action);
+    }
     accumulated_ += seconds;
     while (accumulated_ + 1e-9 >= 0.01 && status_ == Status::Running) {
         accumulated_ -= 0.01;

@@ -8,6 +8,11 @@ int main() {
         arcade::test::qixTests();
         arcade::test::centipedeTests();
         arcade::test::solarfoxTests();
+        arcade::test::pacmanBonusTests();
+        arcade::test::qixBonusTests();
+        arcade::test::centipedeBonusTests();
+        arcade::test::solarfoxBonusTests();
+        arcade::test::originalLevelsTests();
         std::cout << arcade::test::checks << " bonus gameplay checks passed\n";
         return 0;
     } catch (const std::exception &error) {
