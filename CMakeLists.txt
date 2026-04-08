@@ -96,6 +96,8 @@ if(ARCADE_BONUS)
     arcade_plugin(arcade_solarfox ${solarfox_sources})
     target_link_libraries(arcade_solarfox PRIVATE arcade_game_support)
     list(APPEND game_targets arcade_solarfox)
+    add_subdirectory(bonus/legacy)
+    list(APPEND game_targets arcade_legacy)
 endif()
 
 add_custom_target(stage_core ALL
