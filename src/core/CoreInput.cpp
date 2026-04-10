@@ -60,7 +60,7 @@ std::vector<Input> Core::process(const std::vector<Input> &inputs) {
             running_ = false;
             break;
         case Action::NextGraphics:
-            switchGraphics((selectedGraphics_ + 1) % graphics_.size());
+            cycleGraphics();
             break;
         case Action::NextGame:
             if (menu_)
@@ -95,10 +95,10 @@ std::vector<Input> Core::process(const std::vector<Input> &inputs) {
                     selectedGame_ = (selectedGame_ + 1) % games_.size();
                     break;
                 case Action::Left:
-                    switchGraphics((selectedGraphics_ + graphics_.size() - 1) % graphics_.size());
+                    cycleGraphics(true);
                     break;
                 case Action::Right:
-                    switchGraphics((selectedGraphics_ + 1) % graphics_.size());
+                    cycleGraphics();
                     break;
                 case Action::Confirm:
                     startGame(selectedGame_);

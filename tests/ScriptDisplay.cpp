@@ -4,11 +4,15 @@
 #include <cstdlib>
 #include <fstream>
 #include <stdexcept>
+#include <string_view>
 
 namespace arcade::test {
 
 void ScriptDisplay::open() {
     log(std::string("OPEN ") + TEST_DISPLAY_ID);
+    const char *failure = std::getenv("ARCADE_TEST_FAIL_OPEN");
+    if (failure && std::string_view(failure) == TEST_DISPLAY_ID)
+        throw std::runtime_error("test display unavailable");
 }
 
 void ScriptDisplay::close() noexcept {
@@ -77,6 +81,8 @@ void ScriptDisplay::draw(const Frame &frame) {
             " SECOND " +
             std::to_string(std::count(board.cells.begin(), board.cells.end(), Cell::SecondPlayer)) +
             " WIDTH " + std::to_string(board.width) + " HEIGHT " + std::to_string(board.height));
+        log("SESSION SCORE " + std::to_string(board.score) + " GENERATION " +
+            std::to_string(board.generation));
     }
     if (const char *output = std::getenv("ARCADE_TEST_CAPTURE")) {
         std::vector<unsigned char> pixels(1280 * 800 * 3, 0);

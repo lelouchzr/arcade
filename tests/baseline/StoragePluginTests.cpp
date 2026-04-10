@@ -6,6 +6,7 @@
 #include "arcade/Scores.hpp"
 #include <algorithm>
 #include <cmath>
+#include <dlfcn.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -42,6 +43,12 @@ void pluginTests() {
         game.update(.14, {});
         require(count(game.snapshot(), Cell::Head) == 1, "plugin instance invalid");
     }
+#if defined(__linux__) && defined(RTLD_NOLOAD)
+    void *retained = dlopen("lib/arcade_snake.so", RTLD_NOW | RTLD_NOLOAD);
+    if (retained)
+        dlclose(retained);
+    require(!retained, "dlclose retained the game module after its final owner disappeared");
+#endif
     bool missing = false;
     try {
         Plugin plugin("lib/does-not-exist.so");

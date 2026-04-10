@@ -55,23 +55,6 @@ void Core::discover() {
     }
 }
 
-void Core::switchGraphics(std::size_t index) {
-    auto replacement = std::make_unique<Plugin>(graphics_.at(index).path);
-    // Close the old terminal/window before opening the next. Retain the old module for rollback.
-    if (display_)
-        display_->instance<IGraphics>().close();
-    try {
-        replacement->instance<IGraphics>().open();
-    } catch (...) {
-        replacement.reset();
-        if (display_)
-            display_->instance<IGraphics>().open();
-        throw;
-    }
-    display_ = std::move(replacement);
-    selectedGraphics_ = index;
-}
-
 void Core::saveScore() {
     if (game_ && !recorded_) {
         scores_.add(game_->info().id, player_.empty() ? "PLAYER" : player_,

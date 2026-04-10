@@ -19,6 +19,10 @@ if(ARCADE_REQUIRE_ALL_GRAPHICS AND (NOT ARCADE_BONUS OR NOT ARCADE_BUILD_GRAPHIC
 endif()
 
 add_compile_options(-Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # GNU unique inline objects implicitly retain plugin images after dlclose.
+    add_compile_options(-fno-gnu-unique)
+endif()
 if(ARCADE_STRICT)
     add_compile_options(-Werror)
 endif()
@@ -37,7 +41,7 @@ add_library(arcade_support STATIC
     src/storage/FileLock.cpp src/storage/ScoreFile.cpp src/storage/Scores.cpp
     src/presentation/CellStyle.cpp src/presentation/BoardViewport.cpp)
 target_link_libraries(arcade_support PUBLIC arcade_sdk ${CMAKE_DL_LIBS} Threads::Threads)
-add_library(arcade_core STATIC src/core/Core.cpp src/core/CoreInput.cpp src/core/CorePresentation.cpp
+add_library(arcade_core STATIC src/core/Core.cpp src/core/CoreGraphics.cpp src/core/CoreInput.cpp src/core/CorePresentation.cpp
     src/core/BoardRenderer.cpp)
 target_include_directories(arcade_core PUBLIC src/core)
 target_link_libraries(arcade_core PUBLIC arcade_support)
@@ -231,7 +235,7 @@ if(BUILD_TESTING)
             set_tests_properties(native_graphics PROPERTIES TIMEOUT 180)
         endif()
     endif()
-    if(FALSE)
+    if(TARGET arcade_ndk)
         add_executable(ndk_lifecycle tests/NdkLifecycle.cpp)
         target_link_libraries(ndk_lifecycle PRIVATE arcade_support)
         add_dependencies(ndk_lifecycle arcade_ndk)
@@ -248,8 +252,16 @@ if(BUILD_TESTING)
             set_tests_properties(ndk_memory PROPERTIES TIMEOUT 100)
         endif()
     endif()
+    find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format clang-format-20 clang-format-19 clang-format-18)
+    if(CLANG_FORMAT_EXECUTABLE)
+        add_test(NAME source_quality COMMAND ${Python3_EXECUTABLE} "${PROJECT_SOURCE_DIR}/tools/source_quality.py"
+            "${PROJECT_SOURCE_DIR}" "${CLANG_FORMAT_EXECUTABLE}")
+    endif()
     add_test(NAME integration COMMAND ${Python3_EXECUTABLE} "${PROJECT_SOURCE_DIR}/tests/integration.py" "${PROJECT_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
     set_tests_properties(integration PROPERTIES DEPENDS unit TIMEOUT 60)
+    add_test(NAME graphics_recovery COMMAND ${Python3_EXECUTABLE}
+        "${PROJECT_SOURCE_DIR}/tests/graphics_recovery.py" "${CMAKE_BINARY_DIR}")
+    set_tests_properties(graphics_recovery PROPERTIES TIMEOUT 45)
     if(ARCADE_BONUS)
         add_test(NAME bonus_integration COMMAND ${Python3_EXECUTABLE}
             "${PROJECT_SOURCE_DIR}/tests/bonus_integration.py" "${CMAKE_BINARY_DIR}")

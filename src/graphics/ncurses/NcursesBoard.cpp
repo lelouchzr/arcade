@@ -63,6 +63,12 @@ void Ncurses::drawBoard(const Frame &frame, int rows, int cols) {
                                                : "GAME OVER / F4 RESTART");
     }
     attrset(A_NORMAL);
+    for (const auto &label : frame.labels)
+        if (label.text.starts_with("DISPLAY UNAVAILABLE: ")) {
+            attrset(COLOR_PAIR(COLOR_YELLOW + 1));
+            mvaddnstr(rows - 2, 1, label.text.c_str(), cols - 2);
+            attrset(A_NORMAL);
+        }
     mvaddnstr(rows - 1, 1,
               "D/F7 BONUS  F2 DISPLAY  F3 GAME  F4 RESTART  F5 MENU  F6 PAUSE  ESC EXIT", cols - 2);
 }

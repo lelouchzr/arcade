@@ -1,6 +1,7 @@
 #include "Ncurses.hpp"
 #include <clocale>
 #include <cstdlib>
+#include <dlfcn.h>
 #include <stdexcept>
 #include <unistd.h>
 
@@ -18,6 +19,17 @@ void Ncurses::open() {
     const char *term = std::getenv("TERM");
     if (!term || !*term || std::string(term) == "dumb")
         throw std::runtime_error("ncurses needs a valid TERM");
+#ifdef RTLD_NODELETE
+    // System ncurses keeps process-wide caches beyond delscreen(). Keep their owner loaded.
+    // The Arcade module and its SCREEN still unload and close normally.
+    Dl_info runtime{};
+    if (!dladdr(reinterpret_cast<void *>(newterm), &runtime) || !runtime.dli_fname)
+        throw std::runtime_error("ncurses: cannot locate runtime library");
+    void *resident = dlopen(runtime.dli_fname, RTLD_NOW | RTLD_LOCAL | RTLD_NODELETE);
+    if (!resident)
+        throw std::runtime_error("ncurses: cannot retain runtime caches");
+    dlclose(resident);
+#endif
     std::setlocale(LC_ALL, "");
     signals_.capture();
     screen_ = newterm(nullptr, stdout, stdin);

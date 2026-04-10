@@ -59,7 +59,10 @@ Frame Core::frame() const {
         for (std::size_t i = graphicsStart; i < graphics_.size() && i < graphicsStart + 4; ++i) {
             int y = 286 + static_cast<int>(i - graphicsStart) * 36;
             text(f, 646, y,
-                 (i == selectedGraphics_ ? "[ON] " : "[  ] ") + clipped(graphics_[i].name, 35),
+                 (i == selectedGraphics_             ? "[ON] "
+                  : unavailableGraphics_.contains(i) ? "[--] "
+                                                     : "[  ] ") +
+                     clipped(graphics_[i].name, 35),
                  i == selectedGraphics_ ? Blue : Ink);
         }
         panel(f, 48, 466, 738, 234, "03 / LEADERBOARD - " + games_[selectedGame_].name);
@@ -108,6 +111,8 @@ Frame Core::frame() const {
         text(f, 48, 736, "D/F7 BONUS  F2 DISPLAY  F3 GAME  F4 RESTART  F5 MENU  F6 PAUSE  ESC EXIT",
              Muted);
     }
+    if (!graphicsWarning_.empty())
+        text(f, 48, 710, clipped(graphicsWarning_, 110), Orange, 1);
     return f;
 }
 

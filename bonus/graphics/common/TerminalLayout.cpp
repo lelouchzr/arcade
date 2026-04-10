@@ -49,6 +49,9 @@ std::vector<TerminalText> terminalLayout(const Frame &frame, int columns, int ro
             text(2, rows - 2, label.text, {190, 244, 109});
     if (board.status != Status::Running)
         text(2, rows - 2, board.status == Status::Won ? "YOU WIN" : "GAME OVER", {190, 244, 109});
+    for (const auto &label : frame.labels)
+        if (label.text.starts_with("DISPLAY UNAVAILABLE: "))
+            text(2, rows - 3, label.text, {255, 190, 90});
     text(1, rows - 1, "TAB DISPLAY  R RESTART  M MENU  P PAUSE  D BONUS  ESC EXIT");
     return result;
 }
