@@ -1,0 +1,44 @@
+name: C++ validation
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            bonus: "ON"
+          - os: ubuntu-latest
+            bonus: "OFF"
+          - os: macos-latest
+            bonus: "ON"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y cmake pkg-config libncurses-dev libsdl2-dev libsfml-dev xvfb xauth
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: brew install cmake pkg-config ncurses sdl2 sfml clang-format
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DARCADE_BONUS=${{ matrix.bonus }} -DARCADE_STRICT=ON
+      - name: Build
+        run: cmake --build build --parallel 4
+      - name: Unit and launcher integration tests
+        run: ctest --test-dir build --output-on-failure --timeout 60
+      - name: Exercise real Linux graphics plugins
+        if: runner.os == 'Linux'
+        run: |
+          xvfb-run -a ./build/tests/display_smoke ./lib/arcade_sdl2.so
+          xvfb-run -a ./build/tests/display_smoke ./lib/arcade_sfml.so
+      - name: Exercise original ncurses through the compatibility adapter
+        if: runner.os == 'Linux' && matrix.bonus == 'ON'
+        env:
+          TERM: xterm-256color
+        run: script -q -e -c './build/tests/original_graphics_smoke ./build/tests/original_ncurses.so' /dev/null
